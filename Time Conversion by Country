@@ -1,0 +1,81 @@
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Scanner;
+
+public class time {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Declare formatter here
+
+        try {
+            System.out.println("Welcome to Time Zone Converter!");
+
+            while (true) {
+                // Prompt the user for options
+                System.out.println("Choose an option:");
+                System.out.println("1. Convert local time to another time zone");
+                System.out.println("2. Convert a specific time to another time zone");
+                System.out.println("3. Exit");
+                System.out.print("Enter your choice (1, 2, or 3): ");
+                int choice = sc.nextInt();
+                sc.nextLine(); // Consume newline
+
+                if (choice == 1) {
+                    // Taking user input for local time zone
+                    System.out.print("Enter your local time zone (e.g. Asia/Kolkata, America/New_York, Europe/London): ");
+                    String localZoneIdStr = sc.nextLine();
+                    ZoneId localZoneId = ZoneId.of(localZoneIdStr);
+
+                    // Taking user input for country time zone
+                    System.out.print("Enter the country time zone (e.g. Asia/Tokyo, Europe/London, America/Los_Angeles): ");
+                    String countryZoneIdStr = sc.nextLine();
+                    ZoneId countryZoneId = ZoneId.of(countryZoneIdStr);
+
+                    // Convert local time to country time
+                    LocalDateTime localDateTime = LocalDateTime.now(localZoneId);
+                    LocalDateTime countryDateTime = localDateTime.atZone(localZoneId)
+                            .withZoneSameInstant(countryZoneId)
+                            .toLocalDateTime();
+
+                    // Showing output
+                    String localTime = formatter.format(localDateTime);
+                    String countryTime = formatter.format(countryDateTime);
+                    System.out.println("Local time (" + localZoneId + "): " + localTime);
+                    System.out.println("Country time (" + countryZoneId + "): " + countryTime);
+                } else if (choice == 2) {
+                    // Taking user input for a specific time
+                    System.out.print("Enter a specific date and time (yyyy-MM-dd HH:mm:ss): ");
+                    String specificTimeStr = sc.nextLine();
+                    LocalDateTime specificDateTime = LocalDateTime.parse(specificTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+                    // Taking user input for the target time zone
+                    System.out.print("Enter the target time zone (e.g. Asia/Tokyo, Europe/London, America/Los_Angeles): ");
+                    String targetZoneIdStr = sc.nextLine();
+                    ZoneId targetZoneId = ZoneId.of(targetZoneIdStr);
+
+                    // Convert the specific time to the target time zone
+                    LocalDateTime targetDateTime = specificDateTime.atZone(targetZoneId)
+                            .withZoneSameInstant(ZoneId.systemDefault())
+                            .toLocalDateTime();
+
+                    // Formatting Date and time
+                    String specificTime = formatter.format(specificDateTime);
+                    String targetTime = formatter.format(targetDateTime);
+
+                    // Showing output
+                    System.out.println("Specific time (" + specificTime + "): " + targetTime);
+                } else if (choice == 3) {
+                    System.out.println("Goodbye!");
+                    break; // Exit the while loop
+                } else {
+                    System.out.println("Invalid choice. Please enter 1, 2, or 3.");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid input. Please enter valid time zone strings and date/time format.");
+        } finally {
+            sc.close();
+        }
+    }
+}
